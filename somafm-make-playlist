@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2010 Björn Edström <be@bjrn.se>
+# Copyright (c) 2010-2012 Björn Edström <be@bjrn.se>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -71,24 +71,11 @@ def parse_soma_fm(html):
         tmp = channel.find('h3').contents[0]
         tmp = tmp.strip()
         title = tmp
-
-        tmp = channel.findAll('p')[1]
-        tmp = strip_comments(tmp)
-        tmp = strip_empty(tmp)
-        tmp = tmp[0]
-        tmp = tmp.strip()
-        description = tmp
-
-        # TODO: Right now it will always grab the first format, which
-        # is usually MP3.
-        pls_url = None
-        for format_blob in channel.findAll('span'):
-            link = format_blob.findAll('a')[0]
-            page = dict(link.attrs)[u'href']
-            pls_url = '%s%s.pls' % (SOMAFM_URL, page.split('/')[2])
-            break
-
-        yield (title, description, pls_url)
+        tmp = channel.findAll('a')[0]
+        href = dict(tmp.attrs)[u'href']
+        url = SOMAFM_URL + href.strip('/')
+        description = dict(tmp.findAll('img')[0].attrs)[u'alt']
+        yield (title, description, url + '.pls')
 
 
 def parse_pls(txt):
